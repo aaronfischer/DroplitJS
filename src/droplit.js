@@ -56,12 +56,14 @@
     method: "post",
     divClassName: "droplit",
     hoverClassName: "hover",
+    dropClassName: "dropped",
     showProgress: true
   };
 
   Droplit.prototype.initialize = function() {
     this.hideInputElement();
     this.createDroplitDiv();
+    if (this.options.showProgress) this.createProgressElement();
     this.setUpEventListeners();
   };
 
@@ -75,6 +77,11 @@
     this.element.parentNode.insertBefore(this.droparea, this.element);
   };
 
+  Droplit.prototype.createProgressElement = function() {
+    this.progressElement = document.createElement('progress');
+    this.element.parentNode.insertBefore(this.progressElement, this.element);
+  };
+
   Droplit.prototype.setUpEventListeners = function() {
     var self = this;
     this.droparea.ondragover = function() {
@@ -85,13 +92,38 @@
     };
     this.droparea.ondrop = function(e) {
       e.preventDefault();
-      removeClass(self.droparea, self.options.hoverClassName);
+      addClass(self.droparea, self.options.dropClassName);
+      // removeClass(self.droparea, self.options.hoverClassName);
       self.readFiles(e.dataTransfer.files);
     };
   };
 
   Droplit.prototype.readFiles = function(files) {
+    var self = this,
+        formData = !!window.FormData ? new FormData() : null;
+    for (var i = files.length; i > 0; i--) {
+      if (!!window.FormData) formData.append('file', files[i]);
+      previewfile(files[i]);
+    }
 
+    if (!!window.FormData) {
+      var xhr = new XMLHttpRequest();
+      xhr.open(self.options.method, self.options.url);
+      xhr.onload = function() {
+        self.progressElement.value = self.progressElement.innerHTML = 100;
+      };
+
+      if ("upload" in new XMLHttpRequest()) {
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) {
+            var complete = (e.loaded / e.total * 100 | 0);
+            self.progressElement.value = self.progressElement.innerHTML = complete;
+          }
+        };
+      }
+
+      xhr.send(formData);
+    }
   };
 
   if (typeof jQuery !== "undefined" && jQuery !== null) {

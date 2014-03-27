@@ -19,7 +19,7 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      all: ['src/*.js', 'dist/*.js']
+      all: ['src/*.js', 'dist/*.js', 'spec/*.js']
     },
     watch: {
       files: ['src/**/*.js', 'spec/**/*.js'],
