@@ -13,15 +13,17 @@ module.exports = function(grunt) {
           'src/**/*.js',
         ],
         options: {
-          vendor: 'lib/**/*.js',
           specs: 'spec/**/*.js',
           keepRunner: true
         }
       }
     },
+    jshint: {
+      all: ['src/*.js', 'dist/*.js']
+    },
     watch: {
       files: ['src/**/*.js', 'spec/**/*.js'],
-      tasks: ['jasmine:all']
+      tasks: ['jshint:all', 'jasmine:all']
     },
     connect: {
       server: {
@@ -43,13 +45,12 @@ module.exports = function(grunt) {
     }
   });
 
-  // Register tasks.
   grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
-  // Default task.
   grunt.registerTask('default', ['connect', 'watch']);
 
 };
