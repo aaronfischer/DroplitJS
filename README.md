@@ -2,11 +2,11 @@ WIP!
 
 # DroplitJS
 
-DroplitJS is a javascript library that is used to create drag-n-drop file upload modules.
+DroplitJS is a bare bones javascript library that is used to create drag-n-drop file upload modules.
 
 ## Is DroplitJS for me?
 
-[Dropzone][1] is a great library for handling drag-n-drop file uploading. But I found it to be heavy handed and tedious in terms of changing its styling. DroplitJS, being barebones, ships with no default styles at all. I have left the styling up to the developer using it. If you want a plug-n-play library to handle drag-n-drop file uploading, you should just go with [Dropzone][1], but if you are looking for an option that demands you create your own styling of it, this is for you!
+[Dropzone][1] is a great library for handling drag-n-drop file uploading. But I found it to be heavy handed and tedious in terms of changing its styling. DroplitJS, being bare bones, ships with no default styles at all. I have left the styling up to the developer using it. If you want a plug-n-play library to handle drag-n-drop file uploading, you should just go with [Dropzone][1], but if you are looking for an option that demands you create your own styling of it, this is for you!
 
 ## Usage
 
@@ -20,13 +20,13 @@ If you are using jQuery you can instantiate it like this:
 
 ## Options
 
--`url`: (`String`, default: null) The url to which the upload request will be made.
--`method`: (`String`, default: `"post"`) The method to use for the upload request.
--`divClassName`: (`String`, default: `"droplit"`) The class name to use for the droparea div.
--`hoverClassName`: (`String`, default: `"hover"`) The class name that the droparea gets when the `dragover` event fires.
--`dropClassName`: (`String`, default: `"dropped"`) The class name that the droparea gets when the `drop` event fires.
--`showProgress`: (`String`, default: `true`) Show a progress bar (where supported).
--`acceptedTypes`: (`Array`, default: `[ 'image/png', 'image/jpeg', 'image/gif' ]`) File types that are allowed to be uploaded.
+- `url`: (`String`, default: null) The url to which the upload request will be made.
+- `method`: (`String`, default: `"post"`) The method to use for the upload request.
+- `divClassName`: (`String`, default: `"droplit"`) The class name to use for the droparea div.
+- `hoverClassName`: (`String`, default: `"hover"`) The class name that the droparea gets when the `dragover` event fires.
+- `dropClassName`: (`String`, default: `"dropped"`) The class name that the droparea gets when the `drop` event fires.
+- `showProgress`: (`String`, default: `true`) Show a progress bar (where supported).
+- `acceptedTypes`: (`Array`, default: `[ 'image/png', 'image/jpeg', 'image/gif' ]`) File types that are allowed to be uploaded.
 
 ## Caveats
 
