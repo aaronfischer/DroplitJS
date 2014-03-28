@@ -30,7 +30,16 @@ module.exports = function(grunt) {
       server: {
         options: {
           port: 3000,
-          base: '.'
+          base: '.',
+          middleware: function(connect, options, middlewares) {
+            middlewares.push(function(req, res, next) {
+              if (req.url === '/' && req.method === 'POST') {
+                res.end('Hello World');
+                next();
+              }
+            });
+            return middlewares;
+          }
         }
       }
     },
@@ -51,7 +60,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-
   grunt.registerTask('default', ['connect', 'watch']);
 
 };
