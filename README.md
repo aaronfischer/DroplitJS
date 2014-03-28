@@ -30,7 +30,7 @@ If you are using jQuery you can instantiate it like this:
 
 ## Caveats
 
-1. I started writing this knowing nearly nothing about how to implement drag-n-drop file uploading. Consequently, there is some code in here that I straight up stole from [enyo/dropzone](https://github.com/enyo/dropzone) and from [remy/html5demos][2]
+1. I started writing this knowing nearly nothing about how to implement drag-n-drop file uploading. Consequently, there are some sections of code and concepts in here that I straight up stole from [enyo/dropzone](https://github.com/enyo/dropzone) and from [remy/html5demos][2]
 2. This is still very much a work in progress. I haven't fully tested it. If something breaks, don't sue me, just open up an issue!
 
 [1]: https://github.com/enyo/dropzone
