@@ -57,13 +57,17 @@
     divClassName: "droplit",
     hoverClassName: "hover",
     dropClassName: "dropped",
-    showProgress: true
+    showProgress: true,
+    acceptedTypes: [
+      'image/png',
+      'image/jpeg',
+      'image/gif'
+    ]
   };
 
   Droplit.prototype.initialize = function() {
     this.hideInputElement();
     this.createDroplitDiv();
-    if (this.options.showProgress) this.createProgressElement();
     this.setUpEventListeners();
   };
 
@@ -82,19 +86,22 @@
     this.progressElement.min = 0;
     this.progressElement.max = 100;
     this.progressElement.value = 0;
-    this.element.parentNode.insertBefore(this.progressElement, this.element);
+    this.droparea.appendChild(this.progressElement);
   };
 
   Droplit.prototype.setUpEventListeners = function() {
     var self = this;
     this.droparea.ondragover = function() {
       addClass(self.droparea, self.options.hoverClassName);
+      return false;
     };
     this.droparea.ondragleave = function() {
       removeClass(self.droparea, self.options.hoverClassName);
+      return false;
     };
     this.droparea.ondrop = function(e) {
       e.preventDefault();
+      if (self.options.showProgress) self.createProgressElement();
       addClass(self.droparea, self.options.dropClassName);
       removeClass(self.droparea, self.options.hoverClassName);
       if (e.dataTransfer) {
@@ -106,9 +113,10 @@
   Droplit.prototype.readFiles = function(files) {
     var self = this,
         formData = !!window.FormData ? new FormData() : null;
-    for (var i = files.length; i > 0; i--) {
-      if (!!window.FormData) formData.append('file', files[i]);
-      previewfile(files[i]);
+
+    for (var i = files.length - 1; i > 0; i--) {
+      if (!!window.FormData) formData.append('file', files.item(i));
+      self.previewfile(files.item(i));
     }
 
     if (!!window.FormData) {
@@ -128,6 +136,26 @@
       }
 
       xhr.send(formData);
+    }
+  };
+
+  Droplit.prototype.previewfile = function(file) {
+    var self = this;
+
+    console.log(file);
+    if ((typeof FileReader !== 'undefined') === true && self.options.acceptedTypes[file.type] === true) {
+      var reader = new FileReader();
+      reader.onload = function (event) {
+        var image = new Image();
+        image.src = event.target.result;
+        image.width = 250; // a fake resize
+        holder.appendChild(image);
+      };
+
+      reader.readAsDataURL(file);
+    }  else {
+      holder.innerHTML += '<p>Uploaded ' + file.name + ' ' + (file.size ? (file.size/1024|0) + 'K' : '');
+      console.log(file);
     }
   };
 

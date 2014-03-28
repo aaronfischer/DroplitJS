@@ -23,11 +23,6 @@ describe("DroplitJS", function() {
     expect(divs.length).toBe(1);
   });
 
-  it("Should create a progress element", function() {
-    var progress = document.querySelectorAll('progress');
-    expect(progress.length).toBe(1);
-  });
-
   it("Should add class on dragover", function() {
     var div = document.querySelector('.droplit');
     div.ondragover();
@@ -42,12 +37,16 @@ describe("DroplitJS", function() {
   });
 
   it("Should change class names on drop", function() {
-    var div = document.querySelector('.droplit');
+    var div = document.querySelector('.droplit'),
+        progress;
 
     $(div).trigger('drop');
 
+    progress = document.querySelectorAll('progress');
+
     expect(div.className).not.toMatch(/hover/);
     expect(div.className).toMatch(/dropped/);
+    expect(progress.length).toBe(1);
   });
 
 
