@@ -38,7 +38,9 @@ If you are using jQuery you can instantiate it like this:
 
 ## TODO
 
-- event hooks
+- upload button with text option
+- write more tests
+- write css doc
 
 [1]: https://github.com/enyo/dropzone
 [2]: https://github.com/remy/html5demos
