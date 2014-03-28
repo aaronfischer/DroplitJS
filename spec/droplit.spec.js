@@ -29,7 +29,7 @@ describe("DroplitJS", function() {
     expect(div.className).toMatch(/hover/);
   });
 
-  it("Should remove class on dragoverend", function() {
+  it("Should remove class on dragoverleave", function() {
     var div = document.querySelector('.droplit');
     div.ondragover();
     div.ondragleave();

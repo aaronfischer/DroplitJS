@@ -27,11 +27,18 @@ If you are using jQuery you can instantiate it like this:
 - `dropClassName`: (type: `String`, default: `"dropped"`) The class name that the droparea gets when the `drop` event fires.
 - `showProgress`: (type: `String`, default: `true`) Show a progress bar (where supported).
 - `acceptedTypes`: (type: `Array`, default: `[ 'image/png', 'image/jpeg', 'image/gif' ]`) File types that are allowed to be uploaded.
+- `onDropAreaDragOver`: (type: `Function`, default: `undefined`) Callback function for `dragover` event.
+- `onDropAreaDragLeave`: (type: `Function`, default: `undefined`) Callback function for `dragleave` event.
+- `onDropAreaDrop`: (type: `Function`, default: `undefined`) Callback function for `drop` event.
 
 ## Caveats
 
 1. I started writing this knowing nearly nothing about how to implement drag-n-drop file uploading. Consequently, there are some sections of code and concepts in here that I straight up stole from [enyo/dropzone](https://github.com/enyo/dropzone) and from [remy/html5demos][2]
 2. This is still very much a work in progress. I haven't fully tested it. If something breaks, don't sue me, just open up an issue!
+
+## TODO
+
+- event hooks
 
 [1]: https://github.com/enyo/dropzone
 [2]: https://github.com/remy/html5demos

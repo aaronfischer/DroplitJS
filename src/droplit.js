@@ -104,10 +104,12 @@
     var self = this;
     this.droparea.ondragover = function() {
       addClass(self.droparea, self.options.hoverClassName);
+      if (self.options.onDropAreaDragOver) self.options.onDropAreaDragOver();
       return false;
     };
     this.droparea.ondragleave = function() {
       removeClass(self.droparea, self.options.hoverClassName);
+      if (self.options.onDropAreaDragLeave) self.options.onDropAreaDragLeave();
       return false;
     };
     this.droparea.ondrop = function(e) {
@@ -118,6 +120,7 @@
       if (e.dataTransfer) {
         self.readFiles(e.dataTransfer.files);
       }
+      if (self.options.onDropAreaDrop) self.options.onDropAreaDrop();
     };
   };
 
