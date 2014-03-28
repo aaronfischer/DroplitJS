@@ -67,7 +67,7 @@
 
   Droplit.prototype.initialize = function() {
     this.convertAcceptedTypes();
-    this.hideInputElement();
+    if (this.element.nodeName === "INPUT") this.hideInputElement();
     this.createDroplitDiv();
     this.setUpEventListeners();
   };
@@ -87,9 +87,9 @@
   };
 
   Droplit.prototype.createDroplitDiv = function() {
-    this.droparea = document.createElement('div');
+    this.droparea = this.element.nodeName !== "DIV" ? document.createElement('div') : this.element;
     this.droparea.className = this.options.divClassName;
-    this.element.parentNode.insertBefore(this.droparea, this.element);
+    if (this.element.nodeName !== "DIV") this.element.parentNode.insertBefore(this.droparea, this.element);
   };
 
   Droplit.prototype.createProgressElement = function() {
