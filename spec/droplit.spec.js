@@ -11,17 +11,7 @@ describe("DroplitJS", function() {
   afterEach(function() {
     var divs, progresses;
 
-    divs = document.querySelectorAll('.droplit');
-    for (var i = divs.length - 1; i >= 0; i--) {
-      divs[i].parentNode.removeChild(divs[i]);
-    }
-
-    progresses = document.querySelectorAll('progress');
-    for (i = progresses.length - 1; i >= 0; i--) {
-      progresses[i].parentNode.removeChild(progresses[i]);
-    }
-
-    input.parentNode.removeChild(input);
+    $('.droplit, progress, input').remove();
   });
 
   it("Input should be hidden", function() {
@@ -46,14 +36,16 @@ describe("DroplitJS", function() {
 
   it("Should remove class on dragoverend", function() {
     var div = document.querySelector('.droplit');
-    div.ondragoverend();
+    div.ondragover();
+    div.ondragleave();
     expect(div.className).not.toMatch(/hover/);
   });
 
   it("Should change class names on drop", function() {
-    var div = document.querySelector('.droplit'),
-        evt = new MouseEvent('drop');
-    div.ondrop(evt);
+    var div = document.querySelector('.droplit');
+
+    $(div).trigger('drop');
+
     expect(div.className).not.toMatch(/hover/);
     expect(div.className).toMatch(/dropped/);
   });

@@ -28,7 +28,7 @@
 
   removeClass = function(element, className) {
     var re = new RegExp(className, "g");
-    element.className.replace(re, '');
+    element.className = element.className.replace(re, ' ');
   };
 
   // new Droplit('.file', {...});
@@ -79,6 +79,9 @@
 
   Droplit.prototype.createProgressElement = function() {
     this.progressElement = document.createElement('progress');
+    this.progressElement.min = 0;
+    this.progressElement.max = 100;
+    this.progressElement.value = 0;
     this.element.parentNode.insertBefore(this.progressElement, this.element);
   };
 
@@ -87,14 +90,16 @@
     this.droparea.ondragover = function() {
       addClass(self.droparea, self.options.hoverClassName);
     };
-    this.droparea.ondragoverend = function() {
+    this.droparea.ondragleave = function() {
       removeClass(self.droparea, self.options.hoverClassName);
     };
     this.droparea.ondrop = function(e) {
       e.preventDefault();
       addClass(self.droparea, self.options.dropClassName);
-      // removeClass(self.droparea, self.options.hoverClassName);
-      self.readFiles(e.dataTransfer.files);
+      removeClass(self.droparea, self.options.hoverClassName);
+      if (e.dataTransfer) {
+        self.readFiles(e.dataTransfer.files);
+      }
     };
   };
 

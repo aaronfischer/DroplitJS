@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Droplit Example</title>
+	<style>
+		.droplit {
+			height: 100px;
+			background: #eee;
+		}
+
+		.droplit.hover {
+			background: #ccc;
+		}
+	</style>
+</head>
+<body>
+<form action="/">
+	<input type="file" id="file-upload">
+</form>
+<script src="../src/droplit.js"></script>
+<script type="text/javascript">
+	var droplit = new Droplit('#file-upload', { url: '/' });
+</script>
+</body>
+</html>

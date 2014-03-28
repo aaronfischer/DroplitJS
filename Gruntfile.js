@@ -13,13 +13,14 @@ module.exports = function(grunt) {
           'src/**/*.js',
         ],
         options: {
+          vendor: 'node_modules/jquery/dist/jquery.js',
           specs: 'spec/**/*.js',
           keepRunner: true
         }
       }
     },
     jshint: {
-      all: ['src/*.js', 'dist/*.js', 'spec/*.js']
+      all: ['src/*.js', 'spec/*.js']
     },
     watch: {
       files: ['src/**/*.js', 'spec/**/*.js'],
