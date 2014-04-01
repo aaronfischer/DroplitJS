@@ -38,6 +38,8 @@ If you are using jQuery you can instantiate it like this:
 
 ## TODO
 
+- fix send data
+- input onchange
 - write css styling documentation
 
 [1]: https://github.com/enyo/dropzone

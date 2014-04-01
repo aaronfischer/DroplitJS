@@ -13,7 +13,10 @@ module.exports = function(grunt) {
           'src/**/*.js',
         ],
         options: {
-          vendor: 'node_modules/jquery/dist/jquery.js',
+          vendor: [
+            'node_modules/jquery/dist/jquery.js',
+            'node_modules/sinon/lib/sinon.js',
+          ],
           specs: 'spec/**/*.js',
           keepRunner: true
         }
@@ -30,16 +33,7 @@ module.exports = function(grunt) {
       server: {
         options: {
           port: 3000,
-          base: '.',
-          middleware: function(connect, options, middlewares) {
-            middlewares.push(function(req, res, next) {
-              if (req.url === '/' && req.method === 'POST') {
-                res.end('Hello World');
-                next();
-              }
-            });
-            return middlewares;
-          }
+          base: '.'
         }
       }
     },
@@ -60,6 +54,30 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+
+  grunt.registerTask('build', ['uglify:dist'])
+
+  grunt.registerTask('example', 'Run Express server for example', function() {
+    grunt.log.writeln('Started web server on port 4000');
+    var express = require('express');
+    var app = express();
+    app.use(express.static(__dirname));
+    app.set('views', __dirname);
+    
+    app.engine('html', require('ejs').renderFile);
+
+    app.get('/', function(req, res) {
+      res.render('index.html');
+    });
+
+    app.post('/', function(req, res) {
+      console.log(req.files);
+      res.send('Hello World');
+    });
+
+    app.listen(4000);
+  });
+
   grunt.registerTask('default', ['connect', 'watch']);
 
 };

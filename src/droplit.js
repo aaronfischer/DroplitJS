@@ -57,13 +57,15 @@
 
   Droplit.prototype.defaultOptions = {
     url: null,
-    method: "post",
+    method: "POST",
+    param: 'myFile',
     divClassName: "droplit",
     hoverClassName: "hover",
     dropClassName: "dropped",
     showProgress: true,
     dropareaText: "Drop files here",
     buttonText: "Select Files",
+    previewWidth: 100,
     acceptedTypes: [
       'image/png',
       'image/jpeg',
@@ -156,7 +158,6 @@
   };
 
   Droplit.File = function(file, options, droparea) {
-    var self = this;
     this.file = file;
     this.options = options;
     this.droparea = droparea;
@@ -174,42 +175,38 @@
   Droplit.File.prototype.renderPreview = function() {
     var self = this;
 
-    if (typeof FileReader !== 'undefined' && self.options.acceptedTypes[self.file.type]) {
+    if (self.options.acceptedTypes[self.file.type]) {
       var reader = new FileReader();
       reader.onload = function (event) {
         var image = new Image();
         image.src = event.target.result;
-        image.width = 250; // a fake resize
+        image.width = self.options.previewWidth; // a fake resize
         self.droparea.appendChild(image);
       };
       reader.readAsDataURL(self.file);
     }  else {
-      self.droparea.innerHTML += '<p>Uploaded ' + self.file.name + ' ' + (self.file.size ? (self.file.size/1024|0) + 'K' : '');
+      self.droparea.innerHTML += '<p>Uploaded ' + self.file.name + ' ' + (self.file.size ? (self.file.size / 1024 | 0) + 'K' : '');
     }
-    self.droparea.removeChild(self.progressElement);
   };
 
   Droplit.File.prototype.submitData = function() {
     var self = this;
+    var formData = new FormData();
+    formData.append(self.options.param, self.file);
 
-    if (window.FormData) {
-      var xhr = new XMLHttpRequest();
-      xhr.open(self.options.method, self.options.url);
-      xhr.onload = function() {
-        self.progressElement.value = self.progressElement.innerHTML = 100;
-      };
+    var xhr = new XMLHttpRequest();
+    xhr.open(self.options.method, self.options.url);
 
-      if ("upload" in new XMLHttpRequest()) {
-        xhr.upload.onprogress = function (e) {
-          if (e.lengthComputable) {
-            var complete = (e.loaded / e.total * 100 | 0);
-            self.progressElement.value = self.progressElement.innerHTML = complete;
-          }
-        };
-      }
+    xhr.onload = function() {
+      self.droparea.removeChild(self.progressElement);
+    };
 
-      xhr.send(self.formData);
-    }
+    xhr.upload.onprogress = function (e) {
+      var complete = (e.loaded / e.total * 100 | 0);
+      self.progressElement.value = self.progressElement.innerHTML = complete;
+    };
+
+    xhr.send(formData);
   };
 
   if (typeof jQuery !== "undefined" && jQuery !== null) {
