@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  var __slice, Droplit, extend, addClass, removeClass;
+  var __slice, Droplit, extend, hideElement, addClass, removeClass;
 
   __slice = [].slice;
 
@@ -31,6 +31,10 @@
     element.className = element.className.replace(re, ' ');
   };
 
+  hideElement = function(element) {
+    element.style.display = 'none';
+  };
+
   // new Droplit('.file', {...});
   Droplit = function(element, options) {
     if (typeof element === "string") {
@@ -58,6 +62,8 @@
     hoverClassName: "hover",
     dropClassName: "dropped",
     showProgress: true,
+    dropareaText: "Drop files here",
+    buttonText: "Select Files",
     acceptedTypes: [
       'image/png',
       'image/jpeg',
@@ -67,9 +73,7 @@
 
   Droplit.prototype.initialize = function() {
     this.convertAcceptedTypes();
-    if (this.element.nodeName === "INPUT") this.hideInputElement();
-    this.createDroplitDiv();
-    this.setUpEventListeners();
+    new Droplit.Droparea(this.element, this.options);
   };
 
   Droplit.prototype.convertAcceptedTypes = function() {
@@ -82,56 +86,111 @@
     this.options.acceptedTypes = types;
   };
 
-  Droplit.prototype.hideInputElement = function() {
-    this.element.style.display = 'none';
+  Droplit.Droparea = function(element, options) {
+    this.options = options;
+    this.element = element.nodeName !== "DIV" ? document.createElement('div') : element;
+    this.element.className = options.divClassName;
+    if (element.nodeName !== "DIV") element.parentNode.insertBefore(this.element, element);
+    if (element.nodeName === "INPUT") {
+      this.inputElement = element;
+    }
+    else {
+      this.inputElement = document.createElement('input');
+      element.appendChild(this.inputElement);
+    }
+    hideElement(this.inputElement);
+    this.element.innerText = this.options.dropareaText;
+    new Droplit.Button(this.element, this.options, this);
+    this.bindUIActions();
   };
 
-  Droplit.prototype.createDroplitDiv = function() {
-    this.droparea = this.element.nodeName !== "DIV" ? document.createElement('div') : this.element;
-    this.droparea.className = this.options.divClassName;
-    if (this.element.nodeName !== "DIV") this.element.parentNode.insertBefore(this.droparea, this.element);
-  };
-
-  Droplit.prototype.createProgressElement = function() {
-    this.progressElement = document.createElement('progress');
-    this.progressElement.min = 0;
-    this.progressElement.max = 100;
-    this.progressElement.value = 0;
-    this.droparea.appendChild(this.progressElement);
-  };
-
-  Droplit.prototype.setUpEventListeners = function() {
+  Droplit.Droparea.prototype.bindUIActions = function() {
     var self = this;
-    this.droparea.ondragover = function() {
-      addClass(self.droparea, self.options.hoverClassName);
+    this.element.ondragover = function() {
+      addClass(self.element, self.options.hoverClassName);
       if (self.options.onDropAreaDragOver) self.options.onDropAreaDragOver();
       return false;
     };
-    this.droparea.ondragleave = function() {
-      removeClass(self.droparea, self.options.hoverClassName);
+    this.element.ondragleave = function() {
+      removeClass(self.element, self.options.hoverClassName);
       if (self.options.onDropAreaDragLeave) self.options.onDropAreaDragLeave();
       return false;
     };
-    this.droparea.ondrop = function(e) {
+    this.element.ondrop = function(e) {
       e.preventDefault();
-      if (self.options.showProgress) self.createProgressElement();
-      addClass(self.droparea, self.options.dropClassName);
-      removeClass(self.droparea, self.options.hoverClassName);
-      if (e.dataTransfer) {
-        self.readFiles(e.dataTransfer.files);
-      }
+      addClass(self.element, self.options.dropClassName);
+      removeClass(self.element, self.options.hoverClassName);
       if (self.options.onDropAreaDrop) self.options.onDropAreaDrop();
+      if (e.dataTransfer) self.readFiles(e.dataTransfer.files);
+      return false;
     };
   };
 
-  Droplit.prototype.readFiles = function(files) {
+  Droplit.Droparea.prototype.readFiles = function(files) {
     var self = this,
         formData = window.FormData ? new FormData() : null;
 
     for (var i = files.length - 1; i >= 0; i--) {
       if (window.FormData) formData.append('file', files.item(i));
-      self.previewFile(files.item(i));
+      new Droplit.File(files.item(i), this.options, this.element);
     }
+  };
+
+  Droplit.Button = function(element, options, droparea) {
+    this.droparea = droparea;
+    this.element = document.createElement('button');
+    this.options = options;
+    this.element.innerText = this.options.buttonText;
+
+    element.appendChild(this.element);
+
+    this.bindUIActions();
+  };
+
+  Droplit.Button.prototype.bindUIActions = function() {
+    var self = this;
+    this.element.onclick = function(e) {
+      e.preventDefault();
+      self.droparea.inputElement.click();
+    };
+  };
+
+  Droplit.File = function(file, options, droparea) {
+    var self = this;
+    this.file = file;
+    this.options = options;
+    this.droparea = droparea;
+    this.formData = window.FormData ? new FormData() : null;
+    this.progressElement = document.createElement('progress');
+    this.progressElement.min = 0;
+    this.progressElement.max = 100;
+    this.progressElement.value = 0;
+    droparea.appendChild(this.progressElement);
+
+    this.renderPreview();
+    this.submitData();
+  };
+
+  Droplit.File.prototype.renderPreview = function() {
+    var self = this;
+
+    if (typeof FileReader !== 'undefined' && self.options.acceptedTypes[self.file.type]) {
+      var reader = new FileReader();
+      reader.onload = function (event) {
+        var image = new Image();
+        image.src = event.target.result;
+        image.width = 250; // a fake resize
+        self.droparea.appendChild(image);
+      };
+      reader.readAsDataURL(self.file);
+    }  else {
+      self.droparea.innerHTML += '<p>Uploaded ' + self.file.name + ' ' + (self.file.size ? (self.file.size/1024|0) + 'K' : '');
+    }
+    self.droparea.removeChild(self.progressElement);
+  };
+
+  Droplit.File.prototype.submitData = function() {
+    var self = this;
 
     if (window.FormData) {
       var xhr = new XMLHttpRequest();
@@ -149,27 +208,8 @@
         };
       }
 
-      xhr.send(formData);
+      xhr.send(self.formData);
     }
-  };
-
-  Droplit.prototype.previewFile = function(file) {
-    var self = this;
-
-    if (typeof FileReader !== 'undefined' && self.options.acceptedTypes[file.type]) {
-      var reader = new FileReader();
-      reader.onload = function (event) {
-        var image = new Image();
-        image.src = event.target.result;
-        image.width = 250; // a fake resize
-        self.droparea.appendChild(image);
-      };
-
-      reader.readAsDataURL(file);
-    }  else {
-      self.droparea.innerHTML += '<p>Uploaded ' + file.name + ' ' + (file.size ? (file.size/1024|0) + 'K' : '');
-    }
-    self.droparea.removeChild(self.progressElement);
   };
 
   if (typeof jQuery !== "undefined" && jQuery !== null) {

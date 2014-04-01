@@ -38,22 +38,6 @@ If you are using jQuery you can instantiate it like this:
 
 ## TODO
 
-- upload button with text option
-- refactor into modules with separate layers
-	
-#### Modules 
-
-1. Button
-2. Droparea
-3. Progress
-4. Preview
-
-#### Layers
-
-1. Presentation / Interaction
-2. Data management
-3. Setup
-	
 - write css styling documentation
 
 [1]: https://github.com/enyo/dropzone
