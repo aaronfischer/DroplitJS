@@ -10,7 +10,8 @@ module.exports = function(grunt) {
     jasmine: {
       all: {
         src: [
-          'src/**/*.js',
+          'src/droplit.js',
+          'src/droparea.js'
         ],
         options: {
           vendor: [
@@ -43,7 +44,7 @@ module.exports = function(grunt) {
           banner: '<%= banner %>'
         },
         files: {
-          'dist/droplit.min.js': ['src/droplit.js']
+          'dist/droplit.min.js': ['src/droplit.js', 'src/droparea.js']
         }
       }
     }
@@ -61,6 +62,10 @@ module.exports = function(grunt) {
     grunt.log.writeln('Started web server on port 4000');
     var express = require('express');
     var app = express();
+    app.configure(function(){
+      app.use(express.methodOverride());
+      app.use(express.multipart());
+    });
     app.use(express.static(__dirname));
     app.set('views', __dirname);
     
@@ -71,8 +76,13 @@ module.exports = function(grunt) {
     });
 
     app.post('/', function(req, res) {
-      console.log(req.files);
-      res.send('Hello World');
+      var fs = require('fs');
+      fs.readFile(req.files.myFile.path, function (err, data) {
+        var newPath = __dirname + "/example/uploads/" + req.files.myFile.originalFilename;
+        fs.writeFile(newPath, data, function (err) {
+          res.redirect("back");
+        });
+      });
     });
 
     app.listen(4000);

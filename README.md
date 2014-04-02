@@ -41,6 +41,8 @@ If you are using jQuery you can instantiate it like this:
 - fix send data
 - input onchange
 - write css styling documentation
+- update options documentation
+- rewrite tests to be unit tests and not integration tests
 
 [1]: https://github.com/enyo/dropzone
 [2]: https://github.com/remy/html5demos
