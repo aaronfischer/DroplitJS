@@ -1,0 +1,3 @@
+describe("Droplit.Droparea", function() {
+
+});
