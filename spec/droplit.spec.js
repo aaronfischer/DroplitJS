@@ -29,6 +29,33 @@ describe("Droplit constructor", function() {
     expect(function() { new Droplit(input); }).toThrow(new Error("Droplit already attached."));
   });
 
+  it("should call initialize", function() {
+    var mock = sinon.mock(Droplit.prototype);
+    mock.expects('initialize').once();
+    var droplit = new Droplit(input);
+    mock.verify();
+  });
+
+  describe("initialize", function() {
+
+    it("should call convertAcceptedTypes", function() {
+      var mock = sinon.mock(Droplit.prototype);
+      mock.expects('convertAcceptedTypes').once();
+      var droplit = new Droplit(input);
+      mock.verify();
+    });
+
+  });
+
+  describe("convertAcceptedTypes", function() {
+
+    it("should convert the acceptedTypes to an object", function() {
+      var droplit = new Droplit(input, { acceptedTypes: ['test'] });
+      expect(droplit.options.acceptedTypes).toEqual({ 'test': true });
+    });
+    
+  });
+
 });
 
 describe("jQuery Plugin", function() {

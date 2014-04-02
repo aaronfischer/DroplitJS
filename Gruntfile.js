@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         options: {
           vendor: [
             'node_modules/jquery/dist/jquery.js',
-            'node_modules/sinon/lib/sinon.js',
+            'node_modules/sinon/pkg/sinon.js',
           ],
           specs: 'spec/**/*.js',
           keepRunner: true
