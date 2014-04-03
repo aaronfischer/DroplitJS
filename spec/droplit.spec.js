@@ -157,26 +157,47 @@ describe("Droplit", function() {
     });
 
     describe("bindUIActions", function() {
+      var droparea, readFilesSpy;
+      beforeEach( function() {
+        droparea = new Droplit.Droparea(div, defaultOptions);
+        readFilesSpy = sinon.spy(Droplit.Droparea.prototype, 'readFiles');
+      });
+
+      afterEach( function() {
+        Droplit.Droparea.prototype.readFiles.restore();
+      });
 
       it('should set dragover event listener', function() {
-        var droparea = new Droplit.Droparea(div, defaultOptions);
-        droparea.element.ondragover();
         expect(droparea.element.ondragover).not.toBe(null);
+      });
+
+      it('dragover should add class', function() {
+        droparea.element.ondragover();
         expect(droparea.element.className).toContain(defaultOptions.hoverClassName);
       });
 
       it('should set dragleave event listener', function() {
-        var droparea = new Droplit.Droparea(div, defaultOptions);
         droparea.element.ondragleave();
         expect(droparea.element.ondragleave).not.toBe(null);
+      });
+
+      it('dragleave should remove class', function() {
+        droparea.element.ondragleave();
         expect(droparea.element.className).not.toContain(defaultOptions.hoverClassName);
       });
 
       it('should set drop event listener', function() {
-        var droparea = new Droplit.Droparea(div, defaultOptions);
-        var e = {};
-        droparea.element.ondrop($.Event('drop', {dataTransfer: { files: [] }}));
         expect(droparea.element.ondrop).not.toBe(null);
+      });
+
+      it('drop should call readfiles if dataTransfer exists', function() {
+        droparea.element.ondrop($.Event('drop', { dataTransfer: { files: [] } }));
+        expect(readFilesSpy.called).toBe(true);
+      });
+
+      it('drop should not call readFiles if dataTransfer does not exists', function() {
+        droparea.element.ondrop($.Event('drop'));
+        expect(readFilesSpy.called).not.toBe(true);
       });
 
     });

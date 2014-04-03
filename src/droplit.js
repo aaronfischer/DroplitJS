@@ -123,7 +123,7 @@
       addClass(self.element, self.options.dropClassName);
       removeClass(self.element, self.options.hoverClassName);
       if (self.options.onDropAreaDrop) self.options.onDropAreaDrop();
-      self.readFiles(e.dataTransfer.files);
+      if (e.dataTransfer) self.readFiles(e.dataTransfer.files);
     };
   };
 
