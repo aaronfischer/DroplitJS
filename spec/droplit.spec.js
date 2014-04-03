@@ -1,59 +1,170 @@
-describe("Droplit constructor", function() {
-  var input;
+describe("Droplit", function() {
 
-  beforeEach(function() {
-    input = document.createElement('input');
-    document.querySelector('body').appendChild(input);
-  });
+  describe("Droplit constructor", function() {
+    var input;
 
-  afterEach(function() {
-    $('.droplit, progress, input').remove();
-  });
+    beforeEach(function() {
+      input = document.createElement('input');
+      document.querySelector('body').appendChild(input);
+    });
 
-  it("should throw error for no arguments", function() {
-    expect(function() { new Droplit(); }).toThrow(new Error("Invalid droplit element."));
-  });
+    afterEach(function() {
+      $('.droplit, progress, input').remove();
+    });
 
-  it("should be able to take a string", function() {
-    var droplit = new Droplit('input');
-    expect(droplit.element.nodeName).toBe('INPUT');
-  });
+    it("should throw error for no arguments", function() {
+      expect(function() { new Droplit(); }).toThrow(new Error("Invalid droplit element."));
+    });
 
-  it("should be able to take an element object", function() {
-    var droplit = new Droplit(input);
-    expect(droplit.element.nodeName).toBe('INPUT');
-  });
+    it("should be able to take a string", function() {
+      var droplit = new Droplit('input');
+      expect(droplit.element.nodeName).toBe('INPUT');
+    });
 
-  it("shouldn't be able to be called twice on one element", function() {
-    var droplit = new Droplit(input);
-    expect(function() { new Droplit(input); }).toThrow(new Error("Droplit already attached."));
-  });
+    it("should be able to take an element object", function() {
+      var droplit = new Droplit(input);
+      expect(droplit.element.nodeName).toBe('INPUT');
+    });
 
-  it("should call initialize", function() {
-    var mock = sinon.mock(Droplit.prototype);
-    mock.expects('initialize').once();
-    var droplit = new Droplit(input);
-    mock.verify();
-  });
+    it("shouldn't be able to be called twice on one element", function() {
+      var droplit = new Droplit(input);
+      expect(function() { new Droplit(input); }).toThrow(new Error("Droplit already attached."));
+    });
 
-  describe("initialize", function() {
-
-    it("should call convertAcceptedTypes", function() {
+    it("should call initialize", function() {
       var mock = sinon.mock(Droplit.prototype);
-      mock.expects('convertAcceptedTypes').once();
+      mock.expects('initialize').once();
       var droplit = new Droplit(input);
       mock.verify();
     });
 
+    describe("initialize", function() {
+
+      it("should call convertAcceptedTypes", function() {
+        var mock = sinon.mock(Droplit.prototype);
+        mock.expects('convertAcceptedTypes').once();
+        var droplit = new Droplit(input);
+        mock.verify();
+      });
+
+    });
+
+    describe("convertAcceptedTypes", function() {
+
+      it("should convert the acceptedTypes to an object", function() {
+        var droplit = new Droplit(input, { acceptedTypes: ['test'] });
+        expect(droplit.options.acceptedTypes).toEqual({ 'test': true });
+      });
+      
+    });
+
   });
 
-  describe("convertAcceptedTypes", function() {
+  describe("Droplit.Droparea", function() {
+    var input, div, defaultOptions;
 
-    it("should convert the acceptedTypes to an object", function() {
-      var droplit = new Droplit(input, { acceptedTypes: ['test'] });
-      expect(droplit.options.acceptedTypes).toEqual({ 'test': true });
+    beforeEach(function() {
+      defaultOptions = {
+        url: '/',
+        method: "POST",
+        param: 'myFile',
+        divClassName: "droplit",
+        hoverClassName: "hover",
+        dropClassName: "dropped",
+        showProgress: true,
+        dropareaText: "Drop files here",
+        buttonText: "Select Files",
+        previewWidth: 100,
+        acceptedTypes: [
+          'image/png',
+          'image/jpeg',
+          'image/gif'
+        ]
+      };
+      input = document.createElement('input');
+      document.querySelector('body').appendChild(input);
+
+      div = document.createElement('div');
+      document.querySelector('body').appendChild(div);
     });
-    
+
+    afterEach(function() {
+      $('.droplit, progress, input').remove();
+    });
+
+    it('should expect an element and options', function() {
+      expect(function() { Droplit.Droparea(); }).toThrow();
+    });
+
+    it('should take input object', function() {
+      var droparea = new Droplit.Droparea(input, defaultOptions);
+      expect(droparea.element.nodeName).toBe('DIV');
+    });
+
+    it('should take div object', function() {
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      expect(droparea.element.nodeName).toBe('DIV');
+    });
+
+    it('should take div object', function() {
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      expect(droparea.element.nodeName).toBe('DIV');
+    });
+
+    it('should set the class name', function() {
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      expect(droparea.element.className).toBe(defaultOptions.divClassName);
+    });
+
+    it('should use input if it exists', function() {
+      var droparea = new Droplit.Droparea(input, defaultOptions);
+      expect(droparea.inputElement).toBe(input);
+    });
+
+    it('should create input if doesnt exist', function() {
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      expect(droparea.inputElement.nodeName).toBe('INPUT');
+    });
+
+    it('should hide input', function() {
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      expect(droparea.inputElement.style.display).toBe('none');
+    });
+
+    it('should set text from options', function() {
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      expect(droparea.element.innerText).toBe(defaultOptions.dropareaText + defaultOptions.buttonText);
+    });
+
+    it('should create new instance of Droplit.Button', function() {
+      var spy = sinon.spy(Droplit, 'Button');
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      var test = spy.calledWithNew();
+      expect(test).toBe(true);
+    });
+
+    it('should call bindUIActions', function() {
+      var spy = sinon.spy(Droplit.Droparea.prototype, 'bindUIActions');
+      var droparea = new Droplit.Droparea(div, defaultOptions);
+      expect(spy.called).toBe(true);
+    });
+
+    describe("bindUIActions", function() {
+
+    });
+
+    describe("readFiles", function() {
+      
+    });
+
+  });
+
+  describe("Droplit.Button", function() {
+
+  });
+
+  describe("Droplit.File", function() {
+
   });
 
 });
