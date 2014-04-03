@@ -47,6 +47,13 @@ describe("Droplit", function() {
         mock.verify();
       });
 
+      it('should create new instance of Droplit.Droparea', function() {
+        var spy = sinon.spy(Droplit, 'Droparea');
+        var droplit = new Droplit(input);
+        var test = spy.calledWithNew();
+        expect(test).toBe(true);
+      });
+
     });
 
     describe("convertAcceptedTypes", function() {
@@ -150,6 +157,27 @@ describe("Droplit", function() {
     });
 
     describe("bindUIActions", function() {
+
+      it('should set dragover event listener', function() {
+        var droparea = new Droplit.Droparea(div, defaultOptions);
+        droparea.element.ondragover();
+        expect(droparea.element.ondragover).not.toBe(null);
+        expect(droparea.element.className).toContain(defaultOptions.hoverClassName);
+      });
+
+      it('should set dragleave event listener', function() {
+        var droparea = new Droplit.Droparea(div, defaultOptions);
+        droparea.element.ondragleave();
+        expect(droparea.element.ondragleave).not.toBe(null);
+        expect(droparea.element.className).not.toContain(defaultOptions.hoverClassName);
+      });
+
+      it('should set drop event listener', function() {
+        var droparea = new Droplit.Droparea(div, defaultOptions);
+        var e = {};
+        droparea.element.ondrop($.Event('drop', {dataTransfer: { files: [] }}));
+        expect(droparea.element.ondrop).not.toBe(null);
+      });
 
     });
 
