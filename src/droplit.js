@@ -128,11 +128,7 @@
   };
 
   Droplit.Droparea.prototype.readFiles = function(files) {
-    var self = this,
-        formData = window.FormData ? new FormData() : null;
-
     for (var i = files.length - 1; i >= 0; i--) {
-      if (window.FormData) formData.append('file', files.item(i));
       new Droplit.File(files.item(i), this.options, this.element);
     }
   };

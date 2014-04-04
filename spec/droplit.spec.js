@@ -171,6 +171,15 @@ describe("Droplit", function() {
         expect(droparea.element.ondragover).not.toBe(null);
       });
 
+      it('dragover should run callback function', function() {
+        var options = defaultOptions;
+        options.onDropAreaDragOver = function() { return true; };
+        var spy = sinon.spy(options, 'onDropAreaDragOver');
+        var droparea = new Droplit.Droparea(div, options);
+        droparea.element.ondragover();
+        expect(spy.called).toBe(true);
+      });
+
       it('dragover should add class', function() {
         droparea.element.ondragover();
         expect(droparea.element.className).toContain(defaultOptions.hoverClassName);
@@ -186,8 +195,27 @@ describe("Droplit", function() {
         expect(droparea.element.className).not.toContain(defaultOptions.hoverClassName);
       });
 
+      it('dragleave should run callback function', function() {
+        var options = defaultOptions;
+        options.onDropAreaDragLeave = function() { return true; };
+        var spy = sinon.spy(options, 'onDropAreaDragLeave');
+        var droparea = new Droplit.Droparea(div, options);
+        droparea.element.ondragleave();
+        expect(spy.called).toBe(true);
+      });
+
       it('should set drop event listener', function() {
         expect(droparea.element.ondrop).not.toBe(null);
+      });
+
+      it('drop should remove drag class', function() {
+        droparea.element.ondrop($.Event('drop', { dataTransfer: { files: [] } }));
+        expect(droparea.element.className).not.toContain(defaultOptions.hoverClassName);
+      });
+
+      it('drop should add drop class', function() {
+        droparea.element.ondrop($.Event('drop', { dataTransfer: { files: [] } }));
+        expect(droparea.element.className).toContain(defaultOptions.dropClassName);
       });
 
       it('drop should call readfiles if dataTransfer exists', function() {
@@ -200,10 +228,62 @@ describe("Droplit", function() {
         expect(readFilesSpy.called).not.toBe(true);
       });
 
+      it('drop should run callback function', function() {
+        var options = defaultOptions;
+        options.onDropAreaDrop = function() { return true; };
+        var spy = sinon.spy(options, 'onDropAreaDrop');
+        var droparea = new Droplit.Droparea(div, options);
+        droparea.element.ondrop($.Event('drop', { dataTransfer: { files: [] } }));
+        expect(spy.called).toBe(true);
+      });
     });
 
     describe("readFiles", function() {
-      
+      var FakeFileList = function(files) {
+        this.length = files.length;
+        for (var i = files.length - 1; i >= 0; i--) {
+          this[i] = files[i];
+        }
+      };
+      FakeFileList.prototype.item = function(i) {
+        return this[i];
+      };
+
+      var stub;
+
+      beforeEach( function() {
+        stub = sinon.stub(Droplit, 'File');
+      });
+
+      afterEach( function() {
+        Droplit.File.restore();
+      });
+
+      it('should create a new instance of Droplit.File for one file', function() {
+        var fl = new FakeFileList([{
+          name: "test.jpeg",
+          size: 12345,
+          type: "image/jpeg"
+        }]);
+        Droplit.Droparea.prototype.readFiles(fl, defaultOptions, stub);
+        var test = stub.calledWithNew();
+        expect(test).toBe(true);
+      });
+
+      it('should create a new instance of Droplit.File for each of multiple files', function() {
+        var fl = new FakeFileList([{
+          name: "test.jpeg",
+          size: 12345,
+          type: "image/jpeg"
+        },
+        {
+          name: "test2.jpeg",
+          size: 12345,
+          type: "image/jpeg"
+        }]);
+        Droplit.Droparea.prototype.readFiles(fl, defaultOptions, stub);
+        expect(stub.calledTwice).toBe(true);
+      });
     });
 
   });
