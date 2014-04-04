@@ -102,7 +102,7 @@
     }
     hideElement(this.inputElement);
     this.element.innerText = this.options.dropareaText;
-    new Droplit.Button(this.element, this.options, this);
+    new Droplit.Button(this);
     this.bindUIActions();
   };
 
@@ -133,13 +133,13 @@
     }
   };
 
-  Droplit.Button = function(element, options, droparea) {
+  Droplit.Button = function(droparea) {
     this.droparea = droparea;
     this.element = document.createElement('button');
-    this.options = options;
+    this.options = droparea.options;
     this.element.innerText = this.options.buttonText;
 
-    element.appendChild(this.element);
+    this.droparea.element.appendChild(this.element);
 
     this.bindUIActions();
   };

@@ -68,7 +68,7 @@ describe("Droplit", function() {
   });
 
   describe("Droplit.Droparea", function() {
-    var input, div, defaultOptions;
+    var input, div, defaultOptions, buttonSpy, bindSpy;
 
     beforeEach(function() {
       defaultOptions = {
@@ -93,10 +93,16 @@ describe("Droplit", function() {
 
       div = document.createElement('div');
       document.querySelector('body').appendChild(div);
+
+      buttonSpy = sinon.spy(Droplit, 'Button');
+      bindSpy = sinon.spy(Droplit.Droparea.prototype, 'bindUIActions');
     });
 
     afterEach(function() {
-      $('.droplit, progress, input').remove();
+      div.parentNode.removeChild(div);
+      input.parentNode.removeChild(input);
+      Droplit.Button.restore();
+      Droplit.Droparea.prototype.bindUIActions.restore();
     });
 
     it('should expect an element and options', function() {
@@ -144,27 +150,36 @@ describe("Droplit", function() {
     });
 
     it('should create new instance of Droplit.Button', function() {
-      var spy = sinon.spy(Droplit, 'Button');
       var droparea = new Droplit.Droparea(div, defaultOptions);
-      var test = spy.calledWithNew();
+      var test = buttonSpy.calledWithNew();
       expect(test).toBe(true);
     });
 
     it('should call bindUIActions', function() {
-      var spy = sinon.spy(Droplit.Droparea.prototype, 'bindUIActions');
       var droparea = new Droplit.Droparea(div, defaultOptions);
-      expect(spy.called).toBe(true);
+      expect(bindSpy.called).toBe(true);
     });
 
     describe("bindUIActions", function() {
-      var droparea, readFilesSpy;
+      var droparea, readFilesSpy, doCallbackSpy, options, dlCallbackSpy, dropCallbackspy;
+
       beforeEach( function() {
         droparea = new Droplit.Droparea(div, defaultOptions);
+        options = defaultOptions;
+        options.onDropAreaDragOver = function() { return true; };
+        options.onDropAreaDragLeave = function() { return true; };
+        options.onDropAreaDrop = function() { return true; };
         readFilesSpy = sinon.spy(Droplit.Droparea.prototype, 'readFiles');
+        doCallbackSpy = sinon.spy(options, 'onDropAreaDragOver');
+        dlCallbackSpy = sinon.spy(options, 'onDropAreaDragLeave');
+        dropCallbackspy = sinon.spy(options, 'onDropAreaDrop');
       });
 
       afterEach( function() {
         Droplit.Droparea.prototype.readFiles.restore();
+        options.onDropAreaDragOver.restore();
+        options.onDropAreaDragLeave.restore();
+        options.onDropAreaDrop.restore();
       });
 
       it('should set dragover event listener', function() {
@@ -172,12 +187,9 @@ describe("Droplit", function() {
       });
 
       it('dragover should run callback function', function() {
-        var options = defaultOptions;
-        options.onDropAreaDragOver = function() { return true; };
-        var spy = sinon.spy(options, 'onDropAreaDragOver');
         var droparea = new Droplit.Droparea(div, options);
         droparea.element.ondragover();
-        expect(spy.called).toBe(true);
+        expect(doCallbackSpy.called).toBe(true);
       });
 
       it('dragover should add class', function() {
@@ -196,12 +208,9 @@ describe("Droplit", function() {
       });
 
       it('dragleave should run callback function', function() {
-        var options = defaultOptions;
-        options.onDropAreaDragLeave = function() { return true; };
-        var spy = sinon.spy(options, 'onDropAreaDragLeave');
         var droparea = new Droplit.Droparea(div, options);
         droparea.element.ondragleave();
-        expect(spy.called).toBe(true);
+        expect(dlCallbackSpy.called).toBe(true);
       });
 
       it('should set drop event listener', function() {
@@ -229,12 +238,9 @@ describe("Droplit", function() {
       });
 
       it('drop should run callback function', function() {
-        var options = defaultOptions;
-        options.onDropAreaDrop = function() { return true; };
-        var spy = sinon.spy(options, 'onDropAreaDrop');
         var droparea = new Droplit.Droparea(div, options);
         droparea.element.ondrop($.Event('drop', { dataTransfer: { files: [] } }));
-        expect(spy.called).toBe(true);
+        expect(dropCallbackspy.called).toBe(true);
       });
     });
 
@@ -289,6 +295,82 @@ describe("Droplit", function() {
   });
 
   describe("Droplit.Button", function() {
+    var div, defaultOptions, stub, droparea;
+
+    beforeEach(function() {
+      defaultOptions = {
+        url: '/',
+        method: "POST",
+        param: 'myFile',
+        divClassName: "droplit",
+        hoverClassName: "hover",
+        dropClassName: "dropped",
+        showProgress: true,
+        dropareaText: "Drop files here",
+        buttonText: "Select Files",
+        previewWidth: 100,
+        acceptedTypes: [
+          'image/png',
+          'image/jpeg',
+          'image/gif'
+        ]
+      };
+
+      div = document.createElement('div');
+      document.querySelector('body').appendChild(div);
+
+      // stub is to prevent Button from being run twice
+      stub = sinon.stub(Droplit, 'Button');
+      droparea = new Droplit.Droparea(div, defaultOptions);
+      Droplit.Button.restore();
+    });
+
+    afterEach( function() {
+      div.parentNode.removeChild(div);
+    });
+
+    it('should set its droparea', function() {
+      var button = new Droplit.Button(droparea);
+      expect(button.droparea).toBe(droparea);
+    });
+
+    it('should create a button', function() {
+      var button = new Droplit.Button(droparea);
+      expect(button.element.nodeName).toBe('BUTTON');
+    });
+
+    it('should set its options', function() {
+      var button = new Droplit.Button(droparea);
+      expect(button.options).toBe(droparea.options);
+    });
+
+    it('should set its text', function() {
+      var button = new Droplit.Button(droparea);
+      expect(button.element.innerText).toBe(defaultOptions.buttonText);
+    });
+
+    it('should append button to droparea', function() {
+      var button = new Droplit.Button(droparea);
+      var buttons = $(droparea.element).find('button');
+      expect(buttons.length).toBe(1);
+    });
+
+    it('should call bindUIActions', function() {
+      var bindSpy = sinon.spy(Droplit.Button.prototype, 'bindUIActions');
+      var button = new Droplit.Button(droparea);
+      Droplit.Button.prototype.bindUIActions.restore();
+      expect(bindSpy.called).toBe(true);
+    });
+
+    describe("bindUIActions", function() {
+      it('should trigger click on droparea input on click', function() {
+        var button = new Droplit.Button(droparea);
+        var spy = sinon.spy(button.droparea.inputElement, 'click');
+        button.element.click($.Event('click'));
+        button.droparea.inputElement.click.restore();
+        expect(spy.called).toBe(true);
+      });
+    });
 
   });
 
