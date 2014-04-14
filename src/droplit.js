@@ -75,6 +75,7 @@
 
   Droplit.prototype.initialize = function() {
     this.convertAcceptedTypes();
+    this.convertURL();
     new Droplit.Droparea(this.element, this.options);
   };
 
@@ -86,6 +87,12 @@
     }
     
     this.options.acceptedTypes = types;
+  };
+
+  Droplit.prototype.convertURL = function() {
+    if (typeof this.options.url === 'function') {
+      this.options.url = this.options.url(this);
+    }
   };
 
   Droplit.Droparea = function(element, options) {
@@ -185,11 +192,13 @@
   };
 
   Droplit.File.prototype.submitData = function() {
-    var self = this;
-    var formData = new FormData();
+    var self = this,
+        formData = new FormData(),
+        url;
     formData.append(self.options.param, self.file);
 
     var xhr = new XMLHttpRequest();
+    
     xhr.open(self.options.method, self.options.url);
 
     xhr.onload = function() {
