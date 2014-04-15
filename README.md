@@ -20,7 +20,7 @@ If you are using jQuery you can instantiate it like this:
 
 ## Options
 
-- `url`: (type: `String`, default: `null`) The url to which the upload request will be made.
+- `url`: (type: `String` or `Function`, default: `null`) The url to which the upload request will be made. Function passes in the `Droplit` instance as an argument.
 - `method`: (type: `String`, default: `"post"`) The method to use for the upload request.
 - `divClassName`: (type: `String`, default: `"droplit"`) The class name to use for the droparea div.
 - `hoverClassName`: (type: `String`, default: `"hover"`) The class name that the droparea gets when the `dragover` event fires.
