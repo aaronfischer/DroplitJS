@@ -94,6 +94,7 @@
   };
 
   Droplit.Droparea = function(element, options) {
+    var self = this;
     this.options = options;
     this.element = element.nodeName !== "DIV" ? document.createElement('div') : element;
     this.element.className = options.divClassName;
@@ -108,6 +109,9 @@
       this.element.appendChild(this.inputElement);
     }
     hideElement(this.inputElement);
+    this.inputElement.onchange = function(e) {
+      self.readFiles(e.target.files);
+    };
     new Droplit.Button(this);
     this.bindUIActions();
   };
