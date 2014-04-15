@@ -30,6 +30,7 @@ If you are using jQuery you can instantiate it like this:
 - `onDropAreaDragOver`: (type: `Function`, default: `undefined`) Callback function for `dragover` event.
 - `onDropAreaDragLeave`: (type: `Function`, default: `undefined`) Callback function for `dragleave` event.
 - `onDropAreaDrop`: (type: `Function`, default: `undefined`) Callback function for `drop` event.
+- `success`: (type: `Function`, default: `undefined`) Callback function for successfully uploading file. `File` and `response` are passed in as arguments.
 
 ## Caveats
 
