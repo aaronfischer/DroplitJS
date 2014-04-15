@@ -185,11 +185,17 @@
       reader.onload = function (event) {
         var image = new Image();
         image.src = event.target.result;
-        image.width = self.options.previewWidth; // a fake resize
+        image.width = self.options.previewWidth;
+        // limit to one image
+        var oldImages = self.droparea.querySelectorAll('img');
+        for (var i = oldImages.length - 1; i >= 0; i--) {
+          oldImages[i].remove();
+        }
         self.droparea.appendChild(image);
       };
       reader.readAsDataURL(self.file);
-    }  else {
+    }  
+    else {
       self.droparea.innerHTML += '<p>Uploaded ' + self.file.name + ' ' + (self.file.size ? (self.file.size / 1024 | 0) + 'K' : '');
     }
   };
