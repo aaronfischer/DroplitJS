@@ -209,6 +209,9 @@
 
     xhr.onload = function() {
       self.droparea.removeChild(self.progressElement);
+      if (typeof self.options.success === 'function') {
+        self.options.success(self.file, this.responseText);
+      }
     };
 
     xhr.upload.onprogress = function (e) {
