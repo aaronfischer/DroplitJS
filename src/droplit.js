@@ -201,6 +201,12 @@
     
     xhr.open(self.options.method, self.options.url);
 
+    for (var header in self.options.headers) {
+      if (self.options.headers.hasOwnProperty(header)) {
+        xhr.setRequestHeader(header, self.options.headers[header]);
+      }
+    }
+
     xhr.onload = function() {
       self.droparea.removeChild(self.progressElement);
     };
