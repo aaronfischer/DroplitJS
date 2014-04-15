@@ -81,11 +81,9 @@
 
   Droplit.prototype.convertAcceptedTypes = function() {
     var types = {};
-
     for (var i = this.options.acceptedTypes.length - 1; i >= 0; i--) {
       types[this.options.acceptedTypes[i]] = true;
     }
-    
     this.options.acceptedTypes = types;
   };
 
@@ -100,15 +98,16 @@
     this.element = element.nodeName !== "DIV" ? document.createElement('div') : element;
     this.element.className = options.divClassName;
     if (element.nodeName !== "DIV") element.parentNode.insertBefore(this.element, element);
+    this.element.innerText = this.options.dropareaText;
     if (element.nodeName === "INPUT") {
       this.inputElement = element;
     }
     else {
       this.inputElement = document.createElement('input');
-      element.appendChild(this.inputElement);
+      this.inputElement.type = 'file';
+      this.element.appendChild(this.inputElement);
     }
     hideElement(this.inputElement);
-    this.element.innerText = this.options.dropareaText;
     new Droplit.Button(this);
     this.bindUIActions();
   };

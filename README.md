@@ -39,8 +39,10 @@ If you are using jQuery you can instantiate it like this:
 
 ## TODO
 
-- rewrite tests to be unit tests and not integration tests
 - input onchange
+- limit file number
+- limit file types
+- write missing tests
 - create first official release version
 - write css styling documentation
 - update options documentation
